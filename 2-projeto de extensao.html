@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Atendimento - Arezzo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f1ee;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            border: 2px solid #d8a47f;
+        }
+        h1 {
+            color: #a36a4f;
+            font-weight: bold;
+        }
+        .highlight {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #a36a4f;
+            border-radius: 5px;
+        }
+        .next {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5c3b29;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f1e3d3;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #d8a47f;
+            color: white;
+            text-transform: uppercase;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #d8a47f;
+            cursor: pointer;
+            background-color: #f8f1ee;
+            color: #5c3b29;
+        }
+        select:focus {
+            outline: none;
+            border-color: #a36a4f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel de Atendimento</h1>
+        <div class="highlight" id="current-turn">Está na vez de: Nenhum</div>
+        <div class="next" id="next-turn">Ordem da vez: Nenhum</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="attendants-list"></tbody>
+        </table>
+    </div>
+    <script>
+        const attendants = ["Isabella", "Silvana", "Tayyla", "Marcelo", "Alessandra", "Dayane", "Taisa", "Cleice", "Liliane", "Criz"];
+        const statusOptions = ["Atendendo", "1 na vez", "2 na vez", "3 na vez", "4 na vez", "5 na vez", "6 na vez", "7 na vez", "8 na vez", "9 na vez", "10 na vez", "Foi no 2", "Foi comer"];
+        const listContainer = document.getElementById("attendants-list");
+        const currentTurn = document.getElementById("current-turn");
+        const nextTurn = document.getElementById("next-turn");
+
+        function createTable() {
+            attendants.forEach(name => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = name;
+
+                const statusCell = document.createElement("td");
+                const select = document.createElement("select");
+
+                statusOptions.forEach(status => {
+                    const option = document.createElement("option");
+                    option.value = status;
+                    option.textContent = status;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener("change", () => updateTurns());
+
+                statusCell.appendChild(select);
+                row.appendChild(nameCell);
+                row.appendChild(statusCell);
+
+                listContainer.appendChild(row);
+            });
+        }
+
+        function updateTurns() {
+            let order = [];
+            document.querySelectorAll("tbody select").forEach((select, index) => {
+                if (select.value.includes("na vez")) {
+                    order.push({ name: attendants[index], position: parseInt(select.value) });
+                }
+            });
+            order.sort((a, b) => a.position - b.position);
+            
+            if (order.length > 0) {
+                currentTurn.textContent = `Está na vez de: ${order[0].name}`;
+                nextTurn.textContent = `Ordem da vez: ${order.map(o => o.name).join(", ")}`;
+            } else {
+                currentTurn.textContent = "Está na vez de: Nenhum";
+                nextTurn.textContent = "Ordem da vez: Nenhum";
+            }
+        }
+
+        createTable();
+    </script>
+</body>
+</html>
